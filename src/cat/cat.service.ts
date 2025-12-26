@@ -1,15 +1,23 @@
 
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
+import { Injectable, Inject } from '@nestjs/common';
+import {Cat} from "./providers/cat.interfaces"
+@Injectable()   
 export class CatService {
-  private cats = ['Michi', 'Garfield'];
+  private readonly cats: Cat[] = []; 
 
-  findAll(): string[] {
+   create(cat: Cat) {
+    this.cats.push(cat);
+  }
+
+  findAll(): Cat[] {
     return this.cats;
   }
 
-  create(name: string): void {
-    this.cats.push(name);
-  }
+ 
+}
+
+@Injectable()
+export class HttpService<T> {
+    @Inject('HTTP_OPTIONS')
+    private readonly httpClient: T;
 }
