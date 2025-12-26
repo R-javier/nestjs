@@ -3,7 +3,7 @@ import type { Request } from 'express';
 
 
 @Controller('cats') // Ruta base: /cats
-export class CatsController {
+export class CatController {
   @Post()// el status code predeterminado para respuestas siempre es 200(OK Operación exitosa).
   //EXCEPTO para solicitudes POST cuyo valor es 201(Recurso creado correctamente).
 

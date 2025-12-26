@@ -1,9 +1,8 @@
+
 import { Module } from '@nestjs/common';
-import { CatsController } from './cat/cats.controller'; //Modificamos AppController por CatsController
+import { CatModule } from './cat/cat.module';
 
 @Module({
-  imports: [],
-  providers:[],
-  controllers: [CatsController], //Agregamos - Mismo procedimiento 
+  imports: [CatModule],
 })
 export class AppModule {}
