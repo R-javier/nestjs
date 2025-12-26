@@ -7,4 +7,6 @@ import { CatService } from './cat.service';
   providers: [CatService], //Registra EL provider (service)
   exports: [CatService], // (solo si otro módulo lo necesita el service)
 })
-export class CatModule {}
+export class CatModule {
+    constructor(private catService: CatService){}
+}
