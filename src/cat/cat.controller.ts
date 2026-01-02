@@ -1,23 +1,44 @@
-import { Controller, Get, Post, Body,  Redirect, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters} from '@nestjs/common';
 import { CatService } from './cat.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './providers/cat.interfaces'
 
+//importamos el filtro local para este controlador
+import { HttpExceptionFilter } from './filters/http-exception.filter';
 
+//importamos la excepción con alias para no chocar con la de Nest
+import { ForbiddenException as MyForbiddenException} from './exceptions/forbidden.exception';
+
+// (Opcional) Tenés importado CatchEverythingFilter por si querés usarlo localmente
+// import { CatchEverythingFilter } from './filters/catch-everything.filter';
 @Controller('cats') // Ruta base: /cats
+//Si queremos que el filtro aplique a TODAS las rutas de /cats:
+@UseFilters(HttpExceptionFilter)//Filtros de excepción De manera local en este ejemplo
 export class CatController {
   constructor(private readonly catService: CatService){}
   // @Post()// el status code predeterminado para respuestas siempre es 200(OK Operación exitosa).
   //EXCEPTO para solicitudes POST cuyo valor es 201(Recurso creado correctamente).
-
   // @HttpCode(204)//Operación exitosa - No content
+
   @Post()
+  //@UseFilters(HttpExceptionFilter) //Aplicamos SOLO a este método, lo comento porque ahora se encarga el local
   // @Header('Cache-Control', 'no-store') //Encabezados de respuesta 
   //No guardar nada en caché 
   //Evita que cliente o proxies almacenen la respuesta en caché.
-  create(@Body() createCatDto: CreateCatDto){
-    this.catService.create(createCatDto);
-    return createCatDto;
+  async create(@Body() createCatDto: CreateCatDto){
+    //Forzamos la excepción para probar el filtro y ver el JSON
+    // try{
+    //   this.catService.create(createCatDto);
+    // return createCatDto;
+    // }catch(error){
+    //   throw new MyForbiddenException('No puedes crear gatos ahora');
+    // }
+   
+    //Con esto probamos en POSTAMAN Y VEMOS EL MENSAJE DE ERROR!
+    throw new MyForbiddenException('No puedes crear gatos ahora')
+
+    //En código real, sería:
+    //return this.catService.create(createCatDto);
   }
 
  
@@ -26,13 +47,24 @@ export class CatController {
   // @Redirect('https://nestjs.com', 301) //'URL direccion a la que el cliente será redirigido'
  //statusCode 301- redirección permanente.
  @Get()
-  findAll(): Cat[]{
+  async findAll(): Promise<Cat[]>{
    // Acá tenés acceso a todo lo que viene en la solicitud
    // request.(headers, params, query, body, cookies, ip, etc.)
    // Usar nombres claros y semánticos.
-  return this.catService.findAll()
- }
 
+  
+   //    try{
+   //     return await this.catService.findAll();
+   //    }catch(error){
+   //     //Lanzamos excepción de Nest directamente
+   //     throw new MyForbiddenException('No tienes permisos para ver los gatos');
+   //  }
+
+   //Controller limpio; si el service lanza, el filtro(si está aplicado)
+   //Formateará la respuesta.
+
+   return this.catService.findAll()
+  }
  @Get('abcd/*wildcard')//El controlador tiene base @Controller('cats'), así que todas las rutas empiezan con /cats.
  //El segmento abcd/*wildcard significa: coincide con cualquier cosa después de /cats/abcd/.
  //ejemplo de url http://localhost:3000/cats/abcd/cat
