@@ -1,10 +1,12 @@
-import { IsString, IsNumber } from "class-validator";
+import { IsString, IsInt } from "class-validator";
 
 export class CreateCatDto{
     @IsString()
     name: string;
-    @IsNumber()
+
+    @IsInt()
     age: number;
+    
     @IsString()
     breed: string;
 }

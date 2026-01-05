@@ -1,6 +1,6 @@
 // Importamos NestModule y MiddlewareConsumer para poder registrar middlewares.
-import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod, ValidationPipe } from '@nestjs/common';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 // CAMBIO: usaremos AllExceptionsFilter como filtro global (hereda del base)
 import { AllExceptionsFilter } from './cat/filters/all-exceptions.filter';
 //Nuestro middleware personalizado para logs.
@@ -16,6 +16,11 @@ import { CatController } from './cat/cat.controller';
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter, // CAMBIO: filtro global basado en BaseExceptionFilter
+    },
+    //pipe global
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
     }
   ]
 })

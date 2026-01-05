@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters} from '@nestjs/common';
+import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters, ParseIntPipe, UsePipes, ValidationPipe} from '@nestjs/common';
 import { CatService } from './cat.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './providers/cat.interfaces'
@@ -9,6 +9,9 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 //importamos la excepción con alias para no chocar con la de Nest
 import { ForbiddenException as MyForbiddenException} from './exceptions/forbidden.exception';
 
+//IMPORTS para zod
+import { ZodValidationPipe } from './pipes/zod-validation.pipe';
+import { createCatSchema, CreateCatDtoZod } from './schemas/create-cat.schema';
 // (Opcional) Tenés importado CatchEverythingFilter por si querés usarlo localmente
 // import { CatchEverythingFilter } from './filters/catch-everything.filter';
 @Controller('cats') // Ruta base: /cats
@@ -25,7 +28,10 @@ export class CatController {
   // @Header('Cache-Control', 'no-store') //Encabezados de respuesta 
   //No guardar nada en caché 
   //Evita que cliente o proxies almacenen la respuesta en caché.
+  @UsePipes(new ZodValidationPipe(createCatSchema))
   async create(@Body() createCatDto: CreateCatDto){
+    //createCatDto ya viene validado y con tipos correctos por Zod
+    
     //Forzamos la excepción para probar el filtro y ver el JSON
     // try{
     //   this.catService.create(createCatDto);
@@ -35,10 +41,10 @@ export class CatController {
     // }
    
     //Con esto probamos en POSTAMAN Y VEMOS EL MENSAJE DE ERROR!
-    throw new MyForbiddenException('No puedes crear gatos ahora')
+    // throw new MyForbiddenException('No puedes crear gatos ahora')
 
     //En código real, sería:
-    //return this.catService.create(createCatDto);
+    return this.catService.create(createCatDto);
   }
 
  
@@ -90,11 +96,12 @@ export class CatController {
  }
 
    @Get(':id')//Ruta dinámica: /cats/123
-   findOne(@Param('id') id:string){
+   findOne(@Param('id', new ParseIntPipe()) id:number){ //Agregamos ParseIntPipe luego del 'id'
     //@Param() extrae valores dinámicos de la URL
     //id será "123" si la ruta es /cats/123 token dinámico en la ruta
     return `This action returns a #${id} cat`
    }
+   
 
   //Decoradores útiles:
   // @Query() → parámetros de consulta.

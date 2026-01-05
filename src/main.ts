@@ -1,5 +1,6 @@
 import {NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 
  // CAMBIO: quitar registro global aquí para evitar duplicar filtros
@@ -11,7 +12,7 @@ async function bootstrap() {
   
   // const { httpAdapter } = app.get(HttpAdapterHost);
   // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
-
+  app.useGlobalPipes(new ValidationPipe())
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
