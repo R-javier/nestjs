@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters, ParseIntPipe, UsePipes, ValidationPipe} from '@nestjs/common';
+import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters, ParseIntPipe, UsePipes, ValidationPipe, UseGuards} from '@nestjs/common';
 import { CatService } from './cat.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './providers/cat.interfaces'
@@ -12,10 +12,15 @@ import { ForbiddenException as MyForbiddenException} from './exceptions/forbidde
 //IMPORTS para zod
 import { ZodValidationPipe } from './pipes/zod-validation.pipe';
 import { createCatSchema, CreateCatDtoZod } from './schemas/create-cat.schema';
+
+import { RolesGuard } from './guards/roles.guard';
 // (Opcional) Tenés importado CatchEverythingFilter por si querés usarlo localmente
 // import { CatchEverythingFilter } from './filters/catch-everything.filter';
+import { Roles } from './guards/roles.decorator';
+
 @Controller('cats') // Ruta base: /cats
 //Si queremos que el filtro aplique a TODAS las rutas de /cats:
+@UseGuards(RolesGuard) //Agregamos el UseGuards
 @UseFilters(HttpExceptionFilter)//Filtros de excepción De manera local en este ejemplo
 export class CatController {
   constructor(private readonly catService: CatService){}
@@ -24,6 +29,7 @@ export class CatController {
   // @HttpCode(204)//Operación exitosa - No content
 
   @Post()
+  @Roles(['admin']) //lo agregamos
   //@UseFilters(HttpExceptionFilter) //Aplicamos SOLO a este método, lo comento porque ahora se encarga el local
   // @Header('Cache-Control', 'no-store') //Encabezados de respuesta 
   //No guardar nada en caché 
