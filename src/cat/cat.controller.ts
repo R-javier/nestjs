@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters, ParseIntPipe, UsePipes, ValidationPipe, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Redirect, Query, Param, UseFilters, ParseIntPipe, UsePipes, ValidationPipe, UseGuards, UseInterceptors} from '@nestjs/common';
 import { CatService } from './cat.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './providers/cat.interfaces'
@@ -17,7 +17,10 @@ import { RolesGuard } from './guards/roles.guard';
 // (Opcional) Tenés importado CatchEverythingFilter por si querés usarlo localmente
 // import { CatchEverythingFilter } from './filters/catch-everything.filter';
 import { Roles } from './guards/roles.decorator';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
 
+// @UseInterceptors(LoggingInterceptor) //Agregamos el UseInterceptors a nivel controlador
+@UseInterceptors(new LoggingInterceptor())
 @Controller('cats') // Ruta base: /cats
 //Si queremos que el filtro aplique a TODAS las rutas de /cats:
 @UseGuards(RolesGuard) //Agregamos el UseGuards

@@ -1,7 +1,7 @@
 import {NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-
+import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
 
  // CAMBIO: quitar registro global aquí para evitar duplicar filtros
   // import { HttpAdapterHost } from '@nestjs/core';
@@ -13,6 +13,7 @@ async function bootstrap() {
   // const { httpAdapter } = app.get(HttpAdapterHost);
   // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalInterceptors(new LoggingInterceptor()); //  global
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
