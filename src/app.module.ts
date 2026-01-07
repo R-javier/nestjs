@@ -1,12 +1,13 @@
 // Importamos NestModule y MiddlewareConsumer para poder registrar middlewares.
 import { Module, NestModule, MiddlewareConsumer, RequestMethod, ValidationPipe } from '@nestjs/common';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE, APP_GUARD } from '@nestjs/core';
 // CAMBIO: usaremos AllExceptionsFilter como filtro global (hereda del base)
 import { AllExceptionsFilter } from './cat/filters/all-exceptions.filter';
 //Nuestro middleware personalizado para logs.
 import { LoggerMiddleware } from './cat/logger.middleware';
 import { CatModule } from './cat/cat.module';
 import { CatController } from './cat/cat.controller';
+import { RolesGuard } from './cat/guards/roles.guard';
 // NOTA: CatchEverythingFilter ya NO será global (lo podés dejar para uso local si querés)
 // import { CatchEverythingFilter } from './cat/filters/catch-everything.filter';
 
@@ -21,8 +22,16 @@ import { CatController } from './cat/cat.controller';
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
-    }
-  ]
+    },
+    {
+        provide: APP_GUARD,
+        useClass: RolesGuard
+          
+        
+
+      }
+    ]
+
 })
 export class AppModule implements NestModule {
 // El middleware se configura acá, no dentro del decorador 
