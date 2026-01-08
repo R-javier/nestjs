@@ -17,7 +17,7 @@ import { ZodValidationPipe } from './pipes/zod-validation.pipe';
 import { createCatSchema, CreateCatDtoZod } from './schemas/create-cat.schema';
 
 import { RolesGuard } from './guards/roles.guard';
-// (Opcional) Tenés importado CatchEverythingFilter por si querés usarlo localmente
+// Tengo importado CatchEverythingFilter por si quiero usarlo localmente
 // import { CatchEverythingFilter } from './filters/catch-everything.filter';
 import { Roles } from './guards/roles.decorator';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
@@ -33,8 +33,8 @@ type UserEntity = {
   roles:string[];
 }
 
-// @UseInterceptors(LoggingInterceptor)  // este era el tuyo viejo comentado
-@UseInterceptors(new LoggingInterceptor())  // este es el que entró desde main
+// @UseInterceptors(LoggingInterceptor) 
+@UseInterceptors(new LoggingInterceptor())
 
 @Controller('cats') // Ruta base: /cats
 
