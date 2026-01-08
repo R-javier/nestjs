@@ -6,7 +6,7 @@ export type Role = 'admin' | 'user' | 'moderator';
 export function Auth(...roles: Role[]) {
   return applyDecorators(
     SetMetadata('roles', roles),
-    UseGuards(/* AuthGuard('jwt'), RolesGuard */),
+    UseGuards(/* AuthGuard, RolesGuard */),
     // ApiBearerAuth(),
     // ApiUnauthorizedResponse({ description: 'Unauthorized' }),
   );
