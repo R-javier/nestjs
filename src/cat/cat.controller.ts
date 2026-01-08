@@ -3,6 +3,9 @@ import { CatService } from './cat.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './providers/cat.interfaces'
 
+import { User } from "./decorators/user.decorator" //importamos el decorador
+
+
 //importamos el filtro local para este controlador
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 
@@ -18,6 +21,15 @@ import { RolesGuard } from './guards/roles.guard';
 // import { CatchEverythingFilter } from './filters/catch-everything.filter';
 import { Roles } from './guards/roles.decorator';
 
+import { Auth } from './decorators/auth.decorator'
+type UserEntity = {
+  id:number;
+  firstName:string;
+  lastName:string;
+  email:string;
+  roles:string[];
+}
+
 @Controller('cats') // Ruta base: /cats
 //Si queremos que el filtro aplique a TODAS las rutas de /cats:
 @UseGuards(RolesGuard) //Agregamos el UseGuards
@@ -27,6 +39,38 @@ export class CatController {
   // @Post()// el status code predeterminado para respuestas siempre es 200(OK Operación exitosa).
   //EXCEPTO para solicitudes POST cuyo valor es 201(Recurso creado correctamente).
   // @HttpCode(204)//Operación exitosa - No content
+
+  //ejemplo 1 
+  @Get('me')
+  getCurrentUser(@User() user: UserEntity){
+    console.log(user);
+    return user;
+  }
+
+  //ejemplo 2 uso en controlador 
+  @Get('hello')
+  helloCurrentUser(@User('firstName') firstName: string){
+    console.log(`Hello ${firstName}`);
+    return { greeting: `Hello ${firstName}` };
+  }
+
+  //ejemplo 3 aplicar el pipe directamente en el handler
+  @Get('validated-user')
+  async validatedUser(
+  @User(new ValidationPipe({ validateCustomDecorators: true }))
+  user: UserEntity,
+  ) {
+  console.log(user);
+  return user;
+  }
+
+  //ejemplo 4 con Auth.decorator
+  @Get('users')
+  @Auth('admin')
+  findAllUsers() {
+  return [];
+}
+
 
   @Post()
   @Roles(['admin']) //lo agregamos
@@ -54,7 +98,6 @@ export class CatController {
   }
 
  
-
   // @Get() // Maneja GET /cats
   // @Redirect('https://nestjs.com', 301) //'URL direccion a la que el cliente será redirigido'
  //statusCode 301- redirección permanente.
@@ -77,6 +120,7 @@ export class CatController {
 
    return this.catService.findAll()
   }
+
  @Get('abcd/*wildcard')//El controlador tiene base @Controller('cats'), así que todas las rutas empiezan con /cats.
  //El segmento abcd/*wildcard significa: coincide con cualquier cosa después de /cats/abcd/.
  //ejemplo de url http://localhost:3000/cats/abcd/cat
@@ -108,6 +152,7 @@ export class CatController {
     return `This action returns a #${id} cat`
    }
    
+ 
 
   //Decoradores útiles:
   // @Query() → parámetros de consulta.
