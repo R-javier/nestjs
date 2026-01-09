@@ -36,7 +36,7 @@ type UserEntity = {
 // @UseInterceptors(LoggingInterceptor) 
 @UseInterceptors(new LoggingInterceptor())
 
-@Controller('cats') // Ruta base: /cats
+
 
 @Controller('cats') // Ruta base: /cats
 //Si queremos que el filtro aplique a TODAS las rutas de /cats:
