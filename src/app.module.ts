@@ -10,7 +10,7 @@ import { CatController } from './cat/cat.controller';
 import { RolesGuard } from './cat/guards/roles.guard';
 import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
 import { CatsRepository } from './cat/cat.repository';
-
+import { ConfigModule } from './config/config.module';
 
 
 // Simulamos OptionsProvider como clase inyectable (mínimo para que compile).
@@ -81,7 +81,7 @@ const loggerAliasProvider = {
 // import { CatchEverythingFilter } from './cat/filters/catch-everything.filter';
 
 @Module({
-  imports: [CatModule],
+  imports: [CatModule, ConfigModule], //agrego ConfigModule
   providers: [
     {
       provide: APP_FILTER,
@@ -101,6 +101,7 @@ const loggerAliasProvider = {
         provide: APP_INTERCEPTOR,
         useClass: LoggingInterceptor,
     },
+    
 
     // // Provider con token literal 'CONNECTION'
     // {
@@ -123,6 +124,7 @@ const loggerAliasProvider = {
     
     //Provider no basado en servicio (useFactory)
     configFactory
+    
   ],
   //Exportamos el token como lo hace la guia.
   exports: ['CONNECTION']
