@@ -11,6 +11,7 @@ import { RolesGuard } from './cat/guards/roles.guard';
 import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
 import { CatsRepository } from './cat/cat.repository';
 import { ConfigModule } from './config/config.module';
+import { connected } from 'node:process';
 
 
 // Simulamos OptionsProvider como clase inyectable (mínimo para que compile).
@@ -102,6 +103,16 @@ const loggerAliasProvider = {
         useClass: LoggingInterceptor,
     },
     
+    //Demostración de patron si lo necesitamos lo inyectamos
+//     {
+//         provide: 'ASYNC_CONNECTION',
+//         useFactory: async () => {
+//         const connection = await createConnection(options);
+//         return connection;
+//     },
+// }
+
+    
 
     // // Provider con token literal 'CONNECTION'
     // {
@@ -112,18 +123,18 @@ const loggerAliasProvider = {
     //       },
     // },
     //Declaramos CatRepository
-    CatsRepository,
+    // CatsRepository,
 
     //Providers necesarios para la factory de Connection
-    OptionsProvider, //La factory lo inyecta
-    connectionFactory, //provider personalizado (useFactory) del token
+    // OptionsProvider, //La factory lo inyecta
+    // connectionFactory, //provider personalizado (useFactory) del token
 
     //Provider basado en clase + alias (useExisting)
-    LoggerService, //Provider basado en clase
-    loggerAliasProvider, //alias por token string apuntando a la misma instancia
+    // LoggerService, //Provider basado en clase
+    // loggerAliasProvider, //alias por token string apuntando a la misma instancia
     
     //Provider no basado en servicio (useFactory)
-    configFactory
+    // configFactory
     
   ],
   //Exportamos el token como lo hace la guia.
