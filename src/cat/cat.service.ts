@@ -7,8 +7,14 @@ export class CatService {
   private readonly cats: Cat[] = []; 
 
 constructor(
-  @Inject(APP_CONFIG) private readonly config: AppConfig,
-){}
+  @Inject(APP_CONFIG) private readonly config: AppConfig){}
+
+  log(){
+    console.log(this.config.folder);
+    console.log(this.config.environment);
+    console.log(this.config.dbHost);
+    
+  }
 
 count(): number{
   return this.cats.length;
@@ -29,6 +35,8 @@ count(): number{
 
  
 }
+
+// Servicios genéricos de ejemplo inyectando HTTP_OPTIONS 
 
 @Injectable()
 export class HttpService<T> {

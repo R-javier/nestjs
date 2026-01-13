@@ -82,7 +82,14 @@ const loggerAliasProvider = {
 // import { CatchEverythingFilter } from './cat/filters/catch-everything.filter';
 
 @Module({
-  imports: [CatModule, ConfigModule], //agrego ConfigModule
+  imports: [
+    CatModule,
+     ConfigModule.register({//agrego ConfigModule
+      folder: './config',
+      environment: 'dev',
+      dbHost: 'localhost',
+     }),
+    ],
   providers: [
     {
       provide: APP_FILTER,
@@ -103,38 +110,7 @@ const loggerAliasProvider = {
         useClass: LoggingInterceptor,
     },
     
-    //Demostración de patron si lo necesitamos lo inyectamos
-//     {
-//         provide: 'ASYNC_CONNECTION',
-//         useFactory: async () => {
-//         const connection = await createConnection(options);
-//         return connection;
-//     },
-// }
 
-    
-
-    // // Provider con token literal 'CONNECTION'
-    // {
-    //     provide: 'CONNECTION',
-    //     useValue: {
-    //        url: 'localhost', 
-    //        message: 'Esto es una conexión de ejemplo para seguir el flujo de trabajo'
-    //       },
-    // },
-    //Declaramos CatRepository
-    // CatsRepository,
-
-    //Providers necesarios para la factory de Connection
-    // OptionsProvider, //La factory lo inyecta
-    // connectionFactory, //provider personalizado (useFactory) del token
-
-    //Provider basado en clase + alias (useExisting)
-    // LoggerService, //Provider basado en clase
-    // loggerAliasProvider, //alias por token string apuntando a la misma instancia
-    
-    //Provider no basado en servicio (useFactory)
-    // configFactory
     
   ],
   //Exportamos el token como lo hace la guia.
