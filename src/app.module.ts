@@ -12,6 +12,7 @@ import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
 import { CatsRepository } from './cat/cat.repository';
 import { ConfigModule } from './config/config.module';
 import { connected } from 'node:process';
+import { AnimalsModule } from './fundamentals/dynamic-modules/animals.module';
 
 
 // Simulamos OptionsProvider como clase inyectable (mínimo para que compile).
@@ -84,13 +85,8 @@ const loggerAliasProvider = {
 @Module({
   imports: [
     CatModule,
-     ConfigModule.register({//agrego ConfigModule
-      folder: './config',
-      environment: 'dev',
-      dbHost: 'localhost',
-      maxCats: 5,
-      defaultBreed: 'Mixed'
-     }),
+     ConfigModule.register({environment: 'development'}),
+     AnimalsModule.register({type: 'dog'}),
     ],
   providers: [
     {

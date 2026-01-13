@@ -14,7 +14,7 @@ export interface AppConfig {
 @Global()
 @Module({})
 export class ConfigModule {
-  static register(options: any): DynamicModule {
+  static register(options: AppConfig): DynamicModule {
     return {
       module: ConfigModule,
       providers: [
