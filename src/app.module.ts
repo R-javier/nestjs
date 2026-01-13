@@ -1,5 +1,5 @@
 // Importamos NestModule y MiddlewareConsumer para poder registrar middlewares.
-import { Module, NestModule, MiddlewareConsumer, RequestMethod, ValidationPipe } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod, ValidationPipe, Injectable } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 // CAMBIO: usaremos AllExceptionsFilter como filtro global (hereda del base)
 import { AllExceptionsFilter } from './cat/filters/all-exceptions.filter';
@@ -9,16 +9,86 @@ import { CatModule } from './cat/cat.module';
 import { CatController } from './cat/cat.controller';
 import { RolesGuard } from './cat/guards/roles.guard';
 import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
+import { CatsRepository } from './cat/cat.repository';
+import { ConfigModule } from './config/config.module';
+import { connected } from 'node:process';
+
+
+// Simulamos OptionsProvider como clase inyectable (mínimo para que compile).
+@Injectable()
+class OptionsProvider {
+  get() {
+    // Devuelve opciones de conexión 
+  }
+}
+
+// Simulamos DatabaseConnection para el ejemplo
+class DatabaseConnection {
+  //ejemplo de database para connection
+}
+
+const connectionFactory = {
+  provide: 'CONNECTION',
+  useFactory: (optionsProvider: OptionsProvider) => {
+    const options = optionsProvider.get();
+    //return new DatabaseConnection(options);
+    //Lo dejo comentado porque options rompe al no estar declarado
+    //Segun la guia oficial.
+  },
+  inject: [OptionsProvider], //la factory recibe OptionProvider
+};
+
+
+
+//Provider no basado en servicios(useFactory)
+const devConfig = {
+  env: 'development',
+  debug: true,
+  message: 'Config dev utilizada',
+};
+
+const prodConfig = {
+  env: 'production',
+  debug: false,
+  message: 'Config prod utilizada',
+};
+
+
+const configFactory = {
+  provide: 'CONFIG',
+  useFactory: () => {
+    return process.env.NODE_ENV === 'development'
+      ? devConfig
+      : prodConfig;
+  },
+};
+
+
+//Ejemplo literal de la guia: useExisting(alias providers)
+@Injectable()
+class LoggerService {
+  log(message: string) {
+    console.log('[LoggerService]', message);
+  }
+}
+
+const loggerAliasProvider = {
+  provide: 'AliasedLoggerService',
+  useExisting: LoggerService,
+};
+
+
 // NOTA: CatchEverythingFilter ya NO será global (lo podés dejar para uso local si querés)
 // import { CatchEverythingFilter } from './cat/filters/catch-everything.filter';
 
 @Module({
-  imports: [CatModule],
+  imports: [CatModule, ConfigModule], //agrego ConfigModule
   providers: [
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter, // CAMBIO: filtro global basado en BaseExceptionFilter
+      useClass: AllExceptionsFilter, // filtro global basado en BaseExceptionFilter
     },
+
     //pipe global
     {
       provide: APP_PIPE,
@@ -31,8 +101,44 @@ import { LoggingInterceptor } from './cat/interceptors/logging.interceptor';
     {
         provide: APP_INTERCEPTOR,
         useClass: LoggingInterceptor,
-    }
-    ]
+    },
+    
+    //Demostración de patron si lo necesitamos lo inyectamos
+//     {
+//         provide: 'ASYNC_CONNECTION',
+//         useFactory: async () => {
+//         const connection = await createConnection(options);
+//         return connection;
+//     },
+// }
+
+    
+
+    // // Provider con token literal 'CONNECTION'
+    // {
+    //     provide: 'CONNECTION',
+    //     useValue: {
+    //        url: 'localhost', 
+    //        message: 'Esto es una conexión de ejemplo para seguir el flujo de trabajo'
+    //       },
+    // },
+    //Declaramos CatRepository
+    // CatsRepository,
+
+    //Providers necesarios para la factory de Connection
+    // OptionsProvider, //La factory lo inyecta
+    // connectionFactory, //provider personalizado (useFactory) del token
+
+    //Provider basado en clase + alias (useExisting)
+    // LoggerService, //Provider basado en clase
+    // loggerAliasProvider, //alias por token string apuntando a la misma instancia
+    
+    //Provider no basado en servicio (useFactory)
+    // configFactory
+    
+  ],
+  //Exportamos el token como lo hace la guia.
+  exports: ['CONNECTION']
 })
 export class AppModule implements NestModule {
 // El middleware se configura acá, no dentro del decorador 
@@ -47,6 +153,26 @@ export class AppModule implements NestModule {
   }
 }
 
+
+// Providers de clases (useClass)
+// Nest permite resolver un mismo token a distintas clases
+// usando la propiedad `useClass`.
+//
+// Ejemplo tomado de la documentación oficial:
+//
+// const configServiceProvider = {
+//   provide: ConfigService,
+//   useClass:
+//     process.env.NODE_ENV === 'development'
+//       ? DevelopmentConfigService
+//       : ProductionConfigService,
+// };
+//
+// Este patrón es útil cuando se necesita cambiar la
+// implementación según el entorno (dev / prod).
+//
+
+//########################################
 
 // EJEMPLO DE .forRoutes
 // 1) Middleware aplicado a todas las rutas que comienzan con /cats.
