@@ -1,6 +1,6 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { Cat } from "./providers/cat.interfaces"
-import { APP_CONFIG, type AppConfig } from 'src/config/app.config';
+import { APP_CONFIG, type AppConfig } from '../config/app.config';
 
 @Injectable() // El decorador le dice a Nest que esta clase (CatsService) se puede manejar dentro de su contenedor de inversión de control (IoC)  
 export class CatService {
@@ -36,7 +36,7 @@ count(): number{
  
 }
 
-// Servicios genéricos de ejemplo inyectando HTTP_OPTIONS 
+//Servicios genéricos de ejemplo inyectando HTTP_OPTIONS 
 
 @Injectable()
 export class HttpService<T> {

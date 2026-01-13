@@ -88,6 +88,8 @@ const loggerAliasProvider = {
       folder: './config',
       environment: 'dev',
       dbHost: 'localhost',
+      maxCats: 5,
+      defaultBreed: 'Mixed'
      }),
     ],
   providers: [

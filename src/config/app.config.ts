@@ -7,6 +7,7 @@ export interface AppConfig {
   environment: Environment;
   dbHost: string;
   maxCats: number;
+  defaultBreed: string;
 }
 
 
@@ -14,6 +15,7 @@ export const appConfig: AppConfig = {
   folder: './config',
   environment: 'dev',
   dbHost: 'localhost',
-  maxCats: 3,
+  maxCats: 5, //Lo usamos en CatService para el ejemplo
+  defaultBreed: 'Mixed',
 };
 
