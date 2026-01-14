@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CatService } from './cat.service';
 import { APP_CONFIG } from '../config/app.config';
 
-describe('CatService', () => {
+describe('CatService con APP_CONFIG', () => {
   let service: CatService;
 
   beforeEach(async () => {
@@ -11,8 +11,7 @@ describe('CatService', () => {
         CatService,
         {
           provide: APP_CONFIG,
-          useValue: { maxCats: 5, defaultBreed: 'Mixed' },
-        },
+          useValue: { environment: 'dev', maxCats: 5 }},
       ],
     }).compile();
 
@@ -23,14 +22,28 @@ describe('CatService', () => {
     expect(service).toBeDefined();
   });
 
-  it('throws when adding more than 5 cats', async () => {
+
+//Test caso negativo
+
+  it('allows creating exactly 5 cats (pasa)', async () => {
     for (let i = 1; i <= 5; i++) {
-      await service.create({ id: i, name: `Cat ${i}` } as any);
+      const result = service.create({ id: i, name: `Cat ${i}` } as any);
+      expect(result).toBeDefined();
     }
-    await expect(service.create({ id: 6, name: 'Cat 6' } as any)).rejects.toThrow(
-      /No se pueden agregar más de 5 gatos/i
-    );
+  })
+
+  
+
+//Test caso positivo 
+it('throws when adding more than 5 cats (case negativo)', () => {
+    for (let i = 1; i <= 5; i++) {
+      service.create({ id: i, name: `Cat ${i}` } as any);
+    }
+    expect(() =>
+      service.create({ id: 6, name: 'Cat 6' } as any)
+    ).toThrow(/No se pueden agregar más de 5 gatos/i);
   });
+
 });
 
 
