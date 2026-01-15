@@ -24,10 +24,14 @@ export class StarWarsService {
     constructor() {
         const randomIndex = Math.floor(Math.random() * this.characters.length);
         this.chosen = this.characters[randomIndex];
-        console.log(`Personaje elegido para esta solicitud:: ${this.chosen.name} (${this.chosen.side} side)`);
+        //console.log(`Personaje elegido para esta solicitud:: ${this.chosen.name} (${this.chosen.side} side)`);
     }
 
     getStarWarsCharacters(): Array<StarWarsCharacter> {
         return this.characters
+    }
+
+    getChosen(): StarWarsCharacter {
+        return this.chosen;
     }
 }
