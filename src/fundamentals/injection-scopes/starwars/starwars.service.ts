@@ -17,8 +17,15 @@ export class StarWarsService {
         { name: 'Han Solo', side: 'light' },
         { name: 'Darth Maul', side: 'dark' }
 
-    ];
+    ]
 
+    private readonly chosen: StarWarsCharacter;
+
+    constructor() {
+        const randomIndex = Math.floor(Math.random() * this.characters.length);
+        this.chosen = this.characters[randomIndex];
+        console.log(`Personaje elegido para esta solicitud:: ${this.chosen.name} (${this.chosen.side} side)`);
+    }
 
     getStarWarsCharacters(): Array<StarWarsCharacter> {
         return this.characters

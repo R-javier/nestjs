@@ -23,6 +23,7 @@ describe('StarWarsController', () => {
         afterEach(async () => {
             await app.close();
         });
+        
         it('GET /starwars/characters - 200 y devuelve un array de personajes', async () => {
             const response = await request(app.getHttpServer())
                 .get('/starwars/characters')
@@ -35,5 +36,19 @@ describe('StarWarsController', () => {
             expect(first).toHaveProperty('name');
             expect(first).toHaveProperty('side');
         });
+    })
+
+    it('GET /starwars/characters devuelve distintos personajes en distintos requests)', async () => {
+        const response1 = await request(app.getHttpServer())
+            .get('/starwars/characters')
+            .expect(200);
+        const response2 = await request(app.getHttpServer())
+            .get('/starwars/characters')
+            .expect(200);
+
+        expect(response1.body[0]).toHaveProperty('name');
+        expect(response2.body[0]).toHaveProperty('name');
+
+
     })
 });
